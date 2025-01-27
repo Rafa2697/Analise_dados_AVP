@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/dashboards.py",
+            "preLaunchTask": "installDependencies",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}
