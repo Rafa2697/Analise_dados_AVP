@@ -64,7 +64,7 @@ fig_pagamentos = px.bar(pagos_por_curso,
                        x="CURSO", 
                        y="quantidade",
                        title="Quantidade de Pagos por Curso", 
-                       height=600)
+                       height=500)
 
 # Adiciona rótulos com as quantidades
 fig_pagamentos.update_traces(texttemplate='%{y}', textposition='outside')
