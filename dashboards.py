@@ -21,7 +21,7 @@ df_filtrado = df[df["UNIDADE"].isin(unidades_selecionadas)]
 st.dataframe(df_filtrado)
 
 col1, col2 = st.columns(2)
-col3, col4, col5 = st.columns(3)
+col3, col4 = st.columns(2)
 
 fig_unidades = px.bar(df_filtrado, x="CURSO",color="SITUACAO", title="Situação por Curso", height=600)
 
@@ -56,10 +56,6 @@ for cidade, soma in df_filtrado.groupby("CIDADE").size().items():
     ))
 col3.plotly_chart(fig_cidades, use_container_width=True)
 
-
-# Filtra apenas pagamentos "PAGO"
-df_pagos = df_filtrado[df_filtrado["PAGAMENTO"] == "PAGO"]
-
 # Cria o agrupamento por curso
 pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"].isin(["Pago", "Bolsa 100%"])].groupby("CURSO").size().reset_index(name="quantidade")
 
@@ -67,7 +63,8 @@ pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"].isin(["Pago", "Bolsa 100%
 fig_pagamentos = px.bar(pagos_por_curso, 
                        x="CURSO", 
                        y="quantidade",
-                       title="Quantidade de Pagos por Curso")
+                       title="Quantidade de Pagos por Curso", 
+                       height=600)
 
 # Adiciona rótulos com as quantidades
 fig_pagamentos.update_traces(texttemplate='%{y}', textposition='outside')
