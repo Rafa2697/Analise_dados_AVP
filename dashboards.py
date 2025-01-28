@@ -61,7 +61,7 @@ col3.plotly_chart(fig_cidades, use_container_width=True)
 df_pagos = df_filtrado[df_filtrado["PAGAMENTO"] == "PAGO"]
 
 # Cria o agrupamento por curso
-pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"] == "Pago"].groupby("CURSO").size().reset_index(name="quantidade")
+pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"].isin(["Pago", "Bolsa 100%"])].groupby("CURSO").size().reset_index(name="quantidade")
 
 # Cria gráfico de barras com os dados agrupados
 fig_pagamentos = px.bar(pagos_por_curso, 
