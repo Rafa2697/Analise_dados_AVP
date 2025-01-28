@@ -3,8 +3,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-
-
 st.set_page_config(layout="wide")
 
 # Título na barra lateral
@@ -30,40 +28,29 @@ col3, col4, col5 = st.columns(3)
 pagamentos_por_curso = df_filtrado["CURSO"].value_counts().reset_index()
 pagamentos_por_curso.columns = ["CURSO", "QUANTIDADE"]
 
-# Concatenar as informações de pagamento na coluna "text"
-df_filtrado.loc[:, "TEXT"] = df_filtrado["PAGAMENTO"]
-# Contar a quantidade de inscritos, aprovados e reprovados na coluna "SITUACAO"
-situacao_counts = df_filtrado["SITUACAO"].value_counts()
-inscritos = situacao_counts.get("INSCRITO", 0)
-aprovados = situacao_counts.get("APROVADO", 0)
-reprovados = situacao_counts.get("REPROVADO", 0)
 
-fig_unidades = px.bar(df_filtrado, x="SITUACAO", color="SITUACAO", title="Situação por UNIDADE")
+fig_unidades = px.bar(df_filtrado, x="CURSO",color="SITUACAO", title="Situação por UNIDADE", height=600)
 
-# Calcular a soma de cada coluna
-soma_colunas = df_filtrado.groupby("SITUACAO").size()
-
-# Adicionar anotações ao gráfico
-for situacao, soma in soma_colunas.items():
+for cidade, soma in df_filtrado.groupby("CURSO").size().items():
     fig_unidades.add_trace(go.Scatter(
-        x=[situacao],
+        x=[cidade],
         y=[soma],
         text=[soma],
         mode='text',
         textposition='top center'
     ))
-
+    
 col1.plotly_chart(fig_unidades,use_container_width=True)
 
 # Gráfico de pagamentos por curso
-fig_cursos = px.pie(df_filtrado, names="PAGAMENTO", title="Pagamentos por UNIDADE", values=[1] * len(df_filtrado))
+fig_cursos = px.pie(df_filtrado, names="PAGAMENTO", title="Pagamentos por UNIDADE selecionada", values=[1] * len(df_filtrado))
 
 col2.plotly_chart(fig_cursos)
 
 
 
 #Situação por cidade
-fig_cidades = px.bar(df_filtrado, x="CIDADE", color="SITUACAO", title="Situação por CIDADE")
+fig_cidades = px.bar(df_filtrado, x="CIDADE", color="SITUACAO", title="Inscritos por CIDADE")
 
 for cidade, soma in df_filtrado.groupby("CIDADE").size().items():
     fig_cidades.add_trace(go.Scatter(
