@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 st.sidebar.title("Seleção de Unidades")
 
 # Importando os dados
-df = pd.read_csv("Ambiente Virtual do Parceiro - AVP (38).csv", sep=";", decimal=",", encoding="latin1")
+df = pd.read_csv("Ambiente Virtual do Parceiro - AVP (40).csv", sep=";", decimal=",", encoding="latin1")
 
 # pegar os valores da coluna unidade
 unidades_selecionadas = st.sidebar.multiselect("Unidades", df["UNIDADE"].unique())
