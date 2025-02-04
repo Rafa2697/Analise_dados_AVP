@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 st.sidebar.title("Seleção de Unidades")
 
 # Importando os dados
-df = pd.read_csv("Ambiente Virtual do Parceiro - AVP (40).csv", sep=";", decimal=",", encoding="latin1")
+df = pd.read_csv("Ambiente Virtual do Parceiro - AVP (44).csv", sep=";", decimal=",", encoding="latin1")
 
 # pegar os valores da coluna unidade
 unidades_selecionadas = st.sidebar.multiselect("Unidades", df["UNIDADE"].unique())
@@ -59,12 +59,15 @@ col3.plotly_chart(fig_cidades, use_container_width=True)
 # Cria o agrupamento por curso
 pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"].isin(["Pago", "Bolsa 100%"])].groupby("CURSO").size().reset_index(name="quantidade")
 
+# Calcula a altura com base no número de cursos
+height = len(pagos_por_curso) * 50  # Ajuste o multiplicador conforme necessário
+
 # Cria gráfico de barras com os dados agrupados
+
 fig_pagamentos = px.bar(pagos_por_curso, 
                        x="CURSO", 
                        y="quantidade",
-                       title="Quantidade de Pagos por Curso", 
-                       height=500)
+                       title="Quantidade de Pagos por Curso")
 
 # Adiciona rótulos com as quantidades
 fig_pagamentos.update_traces(texttemplate='%{y}', textposition='outside')
