@@ -17,7 +17,7 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, sep=";", decimal=",", encoding="latin1")
     unidades_selecionadas = st.sidebar.multiselect("Unidades (Vestibular)", df["UNIDADE"].unique())
     df_filtrado = df[df["UNIDADE"].isin(unidades_selecionadas)]
-    st.dataframe(df_filtrado)
+    #st.dataframe(df_filtrado)
     
     col1, col2 = st.columns(2)
     col3, col4 = st.columns(2)
@@ -129,7 +129,7 @@ if uploaded_file_2 is not None:
     unidades_selecionadas_2 = st.sidebar.multiselect("Unidades (Matrícula)", df_2["unidade"].unique())
     
     df_filtrado_2 = df_2[df_2["unidade"].isin(unidades_selecionadas_2)]# Adiciona o uploader
-    st.dataframe(df_filtrado_2)
+    #st.dataframe(df_filtrado_2)
     
     col1, col2 = st.columns(2)
     
