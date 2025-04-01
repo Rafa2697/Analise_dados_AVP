@@ -8,9 +8,15 @@ st.set_page_config(layout="wide")
 
 # Título na barra lateral
 st.sidebar.title("Seleção de Unidades")
-
-# Importando os dados
-df = pd.read_csv("Ambiente Virtual do Parceiro - AVP (65).csv", sep=";", decimal=",", encoding="latin1")
+uploaded_file = st.file_uploader("Choose a file") # Adiciona o uploader
+if uploaded_file is not None:
+    # Importando os dados
+    df = pd.read_csv(uploaded_file, sep=";", decimal=",", encoding="latin1")
+    
+    # Resto do código continua aqui...
+else:
+    st.warning('Por favor, faça o upload de um arquivo CSV (separado por virgulas) para começar a análise.')
+    st.stop()
 
 # pegar os valores da coluna unidade
 unidades_selecionadas = st.sidebar.multiselect("Unidades", df["UNIDADE"].unique())
