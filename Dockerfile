@@ -1,22 +1,20 @@
-# Use uma imagem base oficial do Python.
-# python:3.9-slim-buster é uma boa escolha, pois é leve.
+# Use uma imagem base oficial do Python
 FROM python:3.9-slim-buster
 
-# Define o diretório de trabalho dentro do contêiner.
-WORKDIR /dashboards
+# Define o diretório de trabalho dentro do contêiner
+WORKDIR /app
 
-# Copia o arquivo requirements.txt para o diretório de trabalho.
-# Isso permite que o Docker utilize o cache de camadas se as dependências não mudarem.
+# Copia o arquivo de requirements primeiro
 COPY requirements.txt .
 
-# Instala as dependências do Python.
+# Instala as dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todo o restante do código da sua aplicação para o diretório de trabalho.
+# Copia todo o restante do código da aplicação
 COPY . .
 
-# Expõe a porta que a aplicação Flask vai usar (padrão do Flask é 5000).
-EXPOSE 5000
+# Expõe a porta que o Streamlit usa por padrão
+EXPOSE 8501
 
-# Comando para rodar a aplicação quando o contêiner for iniciado.
-CMD ["python", "app.py"]
+# Comando para rodar a aplicação
+CMD ["streamlit", "run", "dashboards.py", "--server.port=8501", "--server.address=0.0.0.0"]
