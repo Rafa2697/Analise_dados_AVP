@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
+import os
 
 st.set_page_config(layout="wide")
 
@@ -12,8 +13,14 @@ uploaded_file = st.file_uploader("Arquivo extraído do vestibular, analítico.")
 # Segundo file uploader (independente do primeiro)
 uploaded_file_2 = st.file_uploader("Arquivo extraído de matrícula, analítico")
 
+# Se quiser carregar automaticamente um CSV da raiz do projeto quando não houver upload:
+local_csv = r"C:\Users\rafam\Documents\Analise_dados_AVP\Ambiente Virtual do Parceiro - AVP (7).csv"  # substitua pelo nome correto
+
+
 # Processamento do primeiro arquivo
-if uploaded_file is not None:
+if uploaded_file is None and os.path.exists(local_csv):
+    uploaded_file = local_csv
+    
     df = pd.read_csv(uploaded_file, sep=";", decimal=",", encoding="latin1")
     unidades_selecionadas = st.sidebar.multiselect("Unidades (Vestibular)", df["UNIDADE"].unique())
     df_filtrado = df[df["UNIDADE"].isin(unidades_selecionadas)]
@@ -35,6 +42,7 @@ if uploaded_file is not None:
     ))
     
     col1.plotly_chart(fig_unidades,use_container_width=True)
+
 
     # Gráfico de pagamentos por curso
     fig_cursos = px.pie(df_filtrado, names="PAGAMENTO", title="Pagamentos por UNIDADE selecionada", values=[1] * len(df_filtrado))
@@ -124,6 +132,7 @@ if uploaded_file is not None:
 
 # Processamento do segundo arquivo
 if uploaded_file_2 is not None:
+    
     df_2 = pd.read_csv(uploaded_file_2, sep=";", decimal=",", encoding="latin1") # Adiciona o uploader
     
     unidades_selecionadas_2 = st.sidebar.multiselect("Unidades (Matrícula)", df_2["unidade"].unique())
@@ -161,6 +170,7 @@ if uploaded_file_2 is not None:
 
     col1.plotly_chart(fig,use_container_width=True)
     col2.plotly_chart(fig2,use_container_width=True)
+
 if uploaded_file is None and uploaded_file_2 is None:
     st.warning('Por favor, faça o upload de pelo menos um arquivo CSV (separado por virgula) para começar a análise.')
     st.stop()
