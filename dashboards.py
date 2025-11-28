@@ -24,72 +24,58 @@ if uploaded_file is None and os.path.exists(local_csv):
     df = pd.read_csv(uploaded_file, sep=";", decimal=",", encoding="latin1")
     unidades_selecionadas = st.sidebar.multiselect("Unidades (Vestibular)", df["UNIDADE"].unique())
     df_filtrado = df[df["UNIDADE"].isin(unidades_selecionadas)]
-    #st.dataframe(df_filtrado)
+    
+    #opção para mostrar a planilha crua
+    if st.checkbox("Mostrar planilha de dados", value=False):
+        st.dataframe(df_filtrado)
     
     col1, col2 = st.columns(2)
     col3, col4 = st.columns(2)
-    col5 = st.columns(1)
-
-    fig_unidades = px.bar(df_filtrado, x="CURSO",color="SITUACAO", title="Situação por Curso", height=600)
-
-    for cidade, soma in df_filtrado.groupby("CURSO").size().items():
-        fig_unidades.add_trace(go.Scatter(
-            x=[cidade],
-            y=[soma],
-            text=[soma],
-            mode='text',
-            textposition='top center'
-    ))
+    col5, col6 = st.columns(2)
     
+     # Gráfico de inscritos por curso
+    inscritos_por_curso = df_filtrado.groupby("CURSO").size(). reset_index(name="quantidade")
+    fig_unidades = px.bar(inscritos_por_curso, x="CURSO", y="quantidade", color="CURSO", title="Situação de inscritos por Curso", height=600)
+    # Adiciona rótulos com as quantidades
+    fig_unidades.update_traces(texttemplate='%{y}', textposition='outside')
+    # ajustes visuais (esconde legenda repetitiva e evita sobreposição de rótulos longos)
+    fig_unidades.update_layout(showlegend=False, xaxis_tickangle=-45, margin=dict(b=140))
     col1.plotly_chart(fig_unidades,use_container_width=True)
-
-
+    
     # Gráfico de pagamentos por curso
     fig_cursos = px.pie(df_filtrado, names="PAGAMENTO", title="Pagamentos por UNIDADE selecionada", values=[1] * len(df_filtrado))
-
     col2.plotly_chart(fig_cursos, use_container_width=True)
 
-
-
     #Situação por cidade
-    fig_cidades = px.bar(df_filtrado, x="CIDADE", color="SITUACAO", title="Inscritos por CIDADE")
-
-    for cidade, soma in df_filtrado.groupby("CIDADE").size().items():
-        fig_cidades.add_trace(go.Scatter(
-            x=[cidade],
-            y=[soma],
-            text=[soma],
-            mode='text',
-            textposition='top center'
-        ))
+    inscritos_por_cidade = df_filtrado.groupby("CIDADE").size().reset_index(name="quantidade")
+    fig_cidades = px.bar(inscritos_por_cidade, 
+            x="CIDADE", 
+            y="quantidade",
+            title="Quantidade de Inscritos por Cidade",
+            height=650)
+    fig_cidades.update_traces(texttemplate='%{y}', textposition='outside')
+    fig_cidades.update_layout(showlegend=False, xaxis_tickangle=-45, margin=dict(b=140))
     col3.plotly_chart(fig_cidades, use_container_width=True)
 
     # Cria o agrupamento por curso
     pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"].isin(["Pago", "Bolsa 100%"])].groupby("CURSO").size().reset_index(name="quantidade")
-
-
-    # Calcula a altura com base no número de cursos
-    height = len(pagos_por_curso) * 50  # Ajuste o multiplicador conforme necessário
-
     # Cria gráfico de barras com os dados agrupados
-
     fig_pagamentos = px.bar(pagos_por_curso, 
             x="CURSO", 
             y="quantidade",
-            title="Quantidade de Pagos por Curso")
-
+            color="CURSO",
+            title="Quantidade de Pagos por Curso",
+            height=600)
     # Adiciona rótulos com as quantidades
     fig_pagamentos.update_traces(texttemplate='%{y}', textposition='outside')
-
-
     # Exibe o gráfico
+    fig_pagamentos.update_layout(showlegend=False, xaxis_tickangle=-45, margin=dict(b=140))
     col4.plotly_chart(fig_pagamentos, use_container_width=True)
 
     # Calcula a idade com base na data de nascimento
     df_filtrado["IDADE"] = df_filtrado["DTNASC"].apply(
         lambda x: min(datetime.now().year - datetime.strptime(x, "%d/%m/%Y").year, 100)
     )
-
     # Cria faixas etárias
     def get_faixa_etaria(idade):
         if idade < 20:
@@ -104,12 +90,9 @@ if uploaded_file is None and os.path.exists(local_csv):
             return "50-59 anos"
         else:
             return "60+ anos"
-
     df_filtrado["FAIXA_ETARIA"] = df_filtrado["IDADE"].apply(get_faixa_etaria)
-
     # Agrupa os dados por faixa etária
     idade_counts = df_filtrado.groupby("FAIXA_ETARIA").size().reset_index(name="quantidade")
-
     # Ordena as faixas etárias
     ordem_faixas = ["Até 19 anos", "20-29 anos", "30-39 anos", "40-49 anos", "50-59 anos", "60+ anos"]
     idade_counts["FAIXA_ETARIA"] = pd.Categorical(idade_counts["FAIXA_ETARIA"], categories=ordem_faixas, ordered=True)
@@ -123,12 +106,33 @@ if uploaded_file is None and os.path.exists(local_csv):
         title="Quantidade de Alunos por Faixa Etária",
         labels={"FAIXA_ETARIA": "Faixa Etária", "quantidade": "Quantidade"},
     )
-
     # Adiciona rótulos com as quantidades
     fig_idades.update_traces(texttemplate='%{y}', textposition='outside')
-
     # Exibe o gráfico
-    col5[0].plotly_chart(fig_idades, use_container_width=True)
+    col5.plotly_chart(fig_idades, use_container_width=True)
+    
+    #pagantes por idade
+    df_filtrado["IDADE_PAGO"] = df_filtrado["PAGAMENTO"].apply(lambda x: 1 if x in ["Pago", "Bolsa 100%"] else 0)
+    idade_counts = df_filtrado[df_filtrado["IDADE_PAGO"] == 1].groupby("FAIXA_ETARIA").size().reset_index(name="quantidade")
+    
+    # Ordena as faixas etárias
+    ordem_faixas = ["Até 19 anos", "20-29 anos", "30-39 anos", "40-49 anos", "50-59 anos", "60+ anos"]
+    idade_counts["FAIXA_ETARIA"] = pd.Categorical(idade_counts["FAIXA_ETARIA"], categories=ordem_faixas, ordered=True)
+    idade_counts = idade_counts.sort_values("FAIXA_ETARIA")
+    
+    # Cria o gráfico de barras para mostrar a quantidade de alunos por faixa etária
+    fig_idades_p = px.bar(
+        idade_counts,
+        x="FAIXA_ETARIA",
+        y="quantidade",
+        title="Quantidade de pagos por Faixa Etária",
+        labels={"FAIXA_ETARIA": "Faixa Etária", "quantidade": "Quantidade"},
+    )
+    fig_idades_p.update_traces(texttemplate='%{y}', textposition='outside')
+    
+    col6.plotly_chart(fig_idades_p, use_container_width=True)
+    
+###########################################################
 
 # Processamento do segundo arquivo
 if uploaded_file_2 is not None:
