@@ -35,11 +35,11 @@ if uploaded_file is not None:
     fig_unidades.update_traces(texttemplate='%{y}', textposition='outside')
     # ajustes visuais (esconde legenda repetitiva e evita sobreposição de rótulos longos)
     fig_unidades.update_layout(showlegend=False, xaxis_tickangle=-45, margin=dict(b=140))
-    col1.plotly_chart(fig_unidades,use_container_width=True)
+    col1.plotly_chart(fig_unidades, width='stretch')
     
     # Gráfico de pagamentos por curso
     fig_cursos = px.pie(df_filtrado, names="PAGAMENTO", title="Pagamentos por UNIDADE selecionada", values=[1] * len(df_filtrado))
-    col2.plotly_chart(fig_cursos, use_container_width=True)
+    col2.plotly_chart(fig_cursos, width='stretch')
 
     #Situação por cidade
     inscritos_por_cidade = df_filtrado.groupby("CIDADE").size().reset_index(name="quantidade")
@@ -50,7 +50,7 @@ if uploaded_file is not None:
             height=650)
     fig_cidades.update_traces(texttemplate='%{y}', textposition='outside')
     fig_cidades.update_layout(showlegend=False, xaxis_tickangle=-45, margin=dict(b=140))
-    col3.plotly_chart(fig_cidades, use_container_width=True)
+    col3.plotly_chart(fig_cidades,  width='stretch')
 
     # Cria o agrupamento por curso
     pagos_por_curso = df_filtrado[df_filtrado["PAGAMENTO"].isin(["Pago", "Bolsa 100%"])].groupby("CURSO").size().reset_index(name="quantidade")
@@ -65,10 +65,10 @@ if uploaded_file is not None:
     fig_pagamentos.update_traces(texttemplate='%{y}', textposition='outside')
     # Exibe o gráfico
     fig_pagamentos.update_layout(showlegend=False, xaxis_tickangle=-45, margin=dict(b=140))
-    col4.plotly_chart(fig_pagamentos, use_container_width=True)
+    col4.plotly_chart(fig_pagamentos,  width='stretch')
 
     # Calcula a idade com base na data de nascimento
-    df_filtrado["IDADE"] = df_filtrado["DTNASC"].apply(
+    df_filtrado.loc[:, "IDADE"] = df_filtrado["DTNASC"].apply(
         lambda x: min(datetime.now().year - datetime.strptime(x, "%d/%m/%Y").year, 100)
     )
     # Cria faixas etárias
@@ -85,7 +85,7 @@ if uploaded_file is not None:
             return "50-59 anos"
         else:
             return "60+ anos"
-    df_filtrado["FAIXA_ETARIA"] = df_filtrado["IDADE"].apply(get_faixa_etaria)
+    df_filtrado.loc[:,"FAIXA_ETARIA"] = df_filtrado["IDADE"].apply(get_faixa_etaria)
     # Agrupa os dados por faixa etária
     idade_counts = df_filtrado.groupby("FAIXA_ETARIA").size().reset_index(name="quantidade")
     # Ordena as faixas etárias
@@ -104,10 +104,10 @@ if uploaded_file is not None:
     # Adiciona rótulos com as quantidades
     fig_idades.update_traces(texttemplate='%{y}', textposition='outside')
     # Exibe o gráfico
-    col5.plotly_chart(fig_idades, use_container_width=True)
+    col5.plotly_chart(fig_idades,  width='stretch')
     
     #pagantes por idade
-    df_filtrado["IDADE_PAGO"] = df_filtrado["PAGAMENTO"].apply(lambda x: 1 if x in ["Pago", "Bolsa 100%"] else 0)
+    df_filtrado.loc[:, "IDADE_PAGO"] = df_filtrado["PAGAMENTO"].apply(lambda x: 1 if x in ["Pago", "Bolsa 100%"] else 0)
     idade_counts = df_filtrado[df_filtrado["IDADE_PAGO"] == 1].groupby("FAIXA_ETARIA").size().reset_index(name="quantidade")
     
     # Ordena as faixas etárias
@@ -125,7 +125,7 @@ if uploaded_file is not None:
     )
     fig_idades_p.update_traces(texttemplate='%{y}', textposition='outside')
     
-    col6.plotly_chart(fig_idades_p, use_container_width=True)
+    col6.plotly_chart(fig_idades_p,  width='stretch')
     
 ###########################################################
 
@@ -167,8 +167,8 @@ if uploaded_file_2 is not None:
                 names="matricula",  # Usa a situação da matrícula como nomes
                 title="Situação das Matrículas")
 
-    col1.plotly_chart(fig,use_container_width=True)
-    col2.plotly_chart(fig2,use_container_width=True)
+    col1.plotly_chart(fig, width='stretch')
+    col2.plotly_chart(fig2, width='stretch')
 
 if uploaded_file is None and uploaded_file_2 is None:
     st.warning('Por favor, faça o upload de pelo menos um arquivo CSV (separado por virgula) para começar a análise.')
