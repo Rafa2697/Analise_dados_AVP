@@ -13,13 +13,8 @@ uploaded_file = st.file_uploader("Arquivo extraído do vestibular, analítico.")
 # Segundo file uploader (independente do primeiro)
 uploaded_file_2 = st.file_uploader("Arquivo extraído de matrícula, analítico")
 
-# Se quiser carregar automaticamente um CSV da raiz do projeto quando não houver upload:
-local_csv = r"C:\Users\rafam\Documents\Analise_dados_AVP\Ambiente Virtual do Parceiro - AVP (7).csv"  # substitua pelo nome correto
-
-
 # Processamento do primeiro arquivo
-if uploaded_file is None and os.path.exists(local_csv):
-    uploaded_file = local_csv
+if uploaded_file is not None:
     
     df = pd.read_csv(uploaded_file, sep=";", decimal=",", encoding="latin1")
     unidades_selecionadas = st.sidebar.multiselect("Unidades (Vestibular)", df["UNIDADE"].unique())
