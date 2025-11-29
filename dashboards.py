@@ -107,7 +107,7 @@ if uploaded_file is not None:
     col5.plotly_chart(fig_idades,  width='stretch')
     
     #pagantes por idade
-    df_filtrado.loc[:, "IDADE_PAGO"] = df_filtrado["PAGAMENTO"].apply(lambda x: 1 if x in ["Pago", "Bolsa 100%"] else 0)
+    df_filtrado.loc[:, "IDADE_PAGO"] = df_filtrado.loc[:, "PAGAMENTO"].apply(lambda x: 1 if x in ["Pago", "Bolsa 100%"] else 0)
     idade_counts = df_filtrado[df_filtrado["IDADE_PAGO"] == 1].groupby("FAIXA_ETARIA").size().reset_index(name="quantidade")
     
     # Ordena as faixas etárias

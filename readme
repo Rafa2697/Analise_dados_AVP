@@ -1,2 +1,7 @@
-init 
+# Analise de dados para planilha avp da unisepe
+
+## instalação
+pip install -r requirements.txt
+
+## rodar o projeto
 streamlit run dashboards.py 
