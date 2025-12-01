@@ -18,7 +18,9 @@ if uploaded_file is not None:
     
     df = pd.read_csv(uploaded_file, sep=";", decimal=",", encoding="latin1")
     unidades_selecionadas = st.sidebar.multiselect("Unidades (Vestibular)", df["UNIDADE"].unique())
-    df_filtrado = df[df["UNIDADE"].isin(unidades_selecionadas)]
+    
+    # --- CORREÇÃO AQUI: Adicionado .copy() ---
+    df_filtrado = df.loc[df["UNIDADE"].isin(unidades_selecionadas)].copy()
     
     #opção para mostrar a planilha crua
     if st.checkbox("Mostrar planilha de dados", value=False):
@@ -68,7 +70,7 @@ if uploaded_file is not None:
     col4.plotly_chart(fig_pagamentos,  width='stretch')
 
     # Calcula a idade com base na data de nascimento
-    df_filtrado.loc[:, "IDADE"] = df_filtrado["DTNASC"].apply(
+    df_filtrado.loc[:, "IDADE"] = df_filtrado.loc[:, "DTNASC"].apply(
         lambda x: min(datetime.now().year - datetime.strptime(x, "%d/%m/%Y").year, 100)
     )
     # Cria faixas etárias
@@ -85,6 +87,7 @@ if uploaded_file is not None:
             return "50-59 anos"
         else:
             return "60+ anos"
+            
     df_filtrado.loc[:,"FAIXA_ETARIA"] = df_filtrado["IDADE"].apply(get_faixa_etaria)
     # Agrupa os dados por faixa etária
     idade_counts = df_filtrado.groupby("FAIXA_ETARIA").size().reset_index(name="quantidade")
@@ -136,7 +139,8 @@ if uploaded_file_2 is not None:
     
     unidades_selecionadas_2 = st.sidebar.multiselect("Unidades (Matrícula)", df_2["unidade"].unique())
     
-    df_filtrado_2 = df_2[df_2["unidade"].isin(unidades_selecionadas_2)]# Adiciona o uploader
+    # --- CORREÇÃO AQUI: Adicionado .copy() ---
+    df_filtrado_2 = df_2[df_2["unidade"].isin(unidades_selecionadas_2)].copy()
     #st.dataframe(df_filtrado_2)
     
     col1, col2 = st.columns(2)
@@ -173,13 +177,3 @@ if uploaded_file_2 is not None:
 if uploaded_file is None and uploaded_file_2 is None:
     st.warning('Por favor, faça o upload de pelo menos um arquivo CSV (separado por virgula) para começar a análise.')
     st.stop()
-
-
-
-
-
-
-
-
-
-
